@@ -1,215 +1,345 @@
-<div align="center"><img width="200" src="https://gitee.com/chu1204505056/image/raw/master/logo/vab.svg"/>
-<h1> vue-admin-beautiful-pro（element-ui） </h1>
-</div>
+# 基于开源项目 vue-admin-beautiful 的业务剖析
 
-[![Website](<https://img.shields.io/badge/ good luck - vue admin beautiful -blue?style=flat-square>)](https://vue-admin-beautiful.com)
-[![stars](https://img.shields.io/github/stars/chuzhixin/vue-admin-beautiful?style=flat-square&logo=GitHub)](https://github.com/chuzhixin/vue-admin-beautiful)
-[![star](https://gitee.com/chu1204505056/vue-admin-beautiful/badge/star.svg?theme=gray)](https://gitee.com/chu1204505056/vue-admin-beautiful)
-[![license](https://img.shields.io/github/license/chuzhixin/vue-admin-beautiful?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
+> 原项目地址：[vue-admin-beautiful](https://gitee.com/chu1204505056/vue-admin-beautiful)
+>
+> 本文档不涉及ui 等方面修改，仅针对业务逻辑的开发，使其可以配合后端开发，减少后端开发的压力
+>
+> 在ui 涉及业务等方面尽量黑盒处理或者跳过
+>
+> 为保证不必要的异常发生，撰写文档的同时保证不修改原项目，即便有修改的地方仅为测试使用
 
-## 地址
+## 目录结构
 
-- [🎉 vue2.x + element-ui（免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-element/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+~~~
+├── build                      # 构建相关
+├── mock                       # 项目mock 模拟数据
+├── public                     # 静态资源
+│   │── favicon.ico            # favicon图标
+│   └── index.html             # html模板
+├── src                        # 源代码
+│   ├── api                    # 所有请求
+│   ├── assets                 # 主题 字体等静态资源
+│   ├── components             # 全局公用组件
+│   ├── directive              # 全局指令
+│   ├── config                 # 全局配置
+│   ├── colorfulIcon           # 项目所有多彩图标存放的位置
+│   ├── remixIcon              # 项目所有小清新图标存放的位置
+│   ├── layouts                # 全局外框
+│   ├── plugins                # 部分组件export
+│   ├── router                 # 路由
+│   ├── store                  # 全局 store管理
+│   ├── styles                 # 全局样式
+│   ├── utils                  # 全局公用utils
+│   ├── views                  # views 所有页面
+│   ├── App.vue                # 入口页面
+│   └── main.js                # 入口文件 加载组件 初始化等
+├── .env.xxx                   # 环境变量配置
+├── .eslintrc.js               # eslint 配置项
+├── .babelrc                   # babel-loader 配置
+├── .editorconfig              # 编辑器配置
+├── .stylelintrc.js            # stylelintrc配置
+├── prettier.config.js         # prettier 配置
+├── vue.config.js              # vue-cli 配置
+└── package.json               # package.json
+~~~
 
-- [⚡️ vue3.x + element-plus（alpha 版本，免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-element-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+## 业务功能流程图
 
-- [⚡️ vue3.x + ant-design-vue（beta 版本，免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-antdv/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+> 根据作者提供的功能图来逐步剖析业务逻辑（代码层面）
 
-- [🚀 admin pro 演示地址（付费版本，支持 PC、平板、手机）](http://vue-admin-beautiful.com/admin-pro/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+![img](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/flow.drawio.png)
 
-- [🚀 admin plus 演示地址（vue3.x 付费版本，支持 PC、平板、手机）](http://vue-admin-beautiful.com/admin-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+## 路由与权限
 
-- [📌 pro 及 plus 购买地址 authorization](http://vue-admin-beautiful.com/authorization/)
+根据功能的示意图基本由路由守卫配置文件所设置，因此从路由守卫文件***src\config\permission.js*** 入手
 
-- [🌐 github 仓库地址](https://github.com/chuzhixin/vue-admin-beautiful?utm_source=gold_browser_extension)
+![image-2021072019082163](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210720190821632.png)
 
-- [🌐 码云仓库地址](https://gitee.com/chu1204505056/vue-admin-beautiful?_from=gitee_search)
+![image-20210721144442836](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210721144442836.png)
 
-- 近期 vab 官网频繁遭到 ddos 攻击，我们已采取相关防范措施，如网站无法访问请访问备份地址
 
-## 备份地址
 
-- [🚀 admin pro 演示地址（付费版本，支持 PC、平板、手机）](https://chu1204505056.gitee.io/admin-pro/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+### 按照功能顺序逐步分解实现原理
 
-- [🚀 admin plus 演示地址（vue3.x 付费版本，支持 PC、平板、手机）](https://chu1204505056.gitee.io/admin-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
+#### 获取令牌
 
-## vue-admin-beautiful 前端讨论 QQ 群
+> 从 store 引入获取角色令牌的函数
 
-- 请我们喝杯咖啡，支付后联系 QQ 783963206 邀请您进入讨论群（由于用户数较多，如果您打赏后未通过好友请求，请在支付宝支付页面选择联系商家），不管您请还是不请，您都可以享受到开源的代码，感谢您的支持和信任，群内提供 vue-admin-beautifu 基础版本、开发工具自动配置教程及项目开发文档。
+***src\store\modules\user.js*** 文件引入 “**getAccessToken**” 函数
 
-<table>
-<tr>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/zfb_kf.jpg">
-</td>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/qq_group/vab-2.jpg">
-</td>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/qq_group/vab-3.jpg">
-</td>
-</tr>
-</table>
+其中store的user文件定义的 state 状态树含有一个指向 '@/utils/accessToken' 的accessToken的数据属性
 
-## 🌱 vue3.x vue3.0-antdv 分支（ant-design-vue）[点击切换分支](https://github.com/chuzhixin/vue-admin-beautiful-pro/tree/vue3.0-antdv)
+![image-20210722095919245](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722095919245.png)
 
-```bash
-# 克隆项目
-git clone -b vue3.0-antdv https://github.com/chuzhixin/vue-admin-beautiful.git
-# 进入项目目录
-cd vue-admin-beautiful-pro
-# 安装依赖
-npm i
-# 本地开发 启动项目
-npm run serve
-```
+***src\utils\accessToken.js*** 文件的 **getAccessToken** 是根据存储的位置来获取指定的数据
 
-## 🌱vue2.x master 分支（element-ui）[点击切换分支](https://github.com/chuzhixin/vue-admin-beautiful-pro/tree/master)
+![image-20210722100526496](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722100526496.png)
 
-```bash
-# 克隆项目
-git clone -b master https://github.com/chuzhixin/vue-admin-beautiful.git
-# 进入项目目录
-cd vue-admin-beautiful-pro
-# 安装依赖
-npm i
-# 本地开发 启动项目
-npm run serve
-```
+#### 根据令牌获取访问该页面的权限并且拿到路由菜单列表
 
-## 友情链接
+> 底层实现要结合sotre来分析，具体的实现不建议修改作者原来的设计
 
-- [uView 文档（超棒的移动跨端框架，文档详细，上手容易）](https://uviewui.com/)
+![image-20210722185112186](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722185112186.png)
 
-- [uView 开源地址（uni-app 生态优秀的 UI 框架，全面的组件和便捷的工具会让您信手拈来，如鱼得水）](https://github.com/YanxinNet/uView/)
+![image-20210722191813416](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722191813416.png)
 
-- [Element UI 表单设计及代码生成器（可视化表单设计器，一键生成 element 表单）](https://github.com/JakHuang/form-generator/)
+![image-20210722143756595](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722143756595.png)
 
-- [luch-request（基于 Promise 开发的 uni-app 跨平台、项目级别的请求库）](https://www.quanzhan.co/luch-request/)
+**持有令牌并且拿到路由菜单后放行**进入下一个页面
 
-## 我们承诺将定期赞助的开源项目（感谢巨人）
+#### 不持有令牌检查访问的路由是否处于免检白名单中
 
-<a title="vue" href="https://cn.vuejs.org/" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/vue.png"/>
-</a>
+> src\config\setting.config.js
 
-<a title="ant-design-vue" href="https://github.com/vueComponent/ant-design-vue#backers" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/antdv.svg"/>
-</a>
+![image-20210720091149139](E:\all_projection\final_works\web_tksure\vue-admin-beautiful\开发记录.assets\image-20210720091149139.png)
 
-<a title="element-plus" href="https://opencollective.com/element-plus" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/element-plus.png"/>
-</a>
+![image-20210722151715187](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722151715187.png)
 
-## 鸣谢
 
-| Project                                                          |
-| ---------------------------------------------------------------- |
-| [vue](https://github.com/vuejs/vue)                              |
-| [element-ui](https://github.com/ElemeFE/element)                 |
-| [element-plus](https://github.com/element-plus/element-plus)     |
-| [ant-design-vue](https://github.com/vueComponent/ant-design-vue) |
-| [mock](https://github.com/nuysoft/Mock)                          |
-| [axios](https://github.com/axios/axios)                          |
 
-## 框架杰出贡献者（排名不分先后）
+## 与后端的交互 | api的修改和自定义
 
-<a href="https://github.com/buuing" target="_blank">
-<img width="50px" style="border-radius:999px" src="https://avatars.githubusercontent.com/u/36689704?s=50"/>
-</a>
-<a href="https://github.com/hipi" target="_blank">
-<img width="50px" style="border-radius:999px" src="https://avatars.githubusercontent.com/u/22478003?s=50"/>
-</a>
-<a href="https://github.com/fwfmiao" target="_blank">
-<img width="50px" style="border-radius:999px" src="https://avatars.githubusercontent.com/u/29328241?s=50"/>
-</a>
-<a href="https://github.com/hdtopku" target="_blank">
-<img width="50px" style="border-radius:999px" src="https://avatars.githubusercontent.com/u/14859466?s=50"/>
-</a>
-<a href="https://github.com/shaonialife" target="_blank">
-<img width="50px" style="border-radius:999px" src="https://avatars.githubusercontent.com/u/16135960?s=50"/>
-</a>
+> api请求地址：详见 `config/settting.config.js` 中的 baseURL，
+>
+> 配置规格如下：
+>
+> “ ? ” 后面配置配置开发环境
+>
+> “ : ” 后面配置生成环境
 
-## 优势及注意事项
+### 使用 springboot为后端 简单测试， 来逐步剖析项目的api交互逻辑
 
-```
-vue-admin-beautiful-pro 对比其他开源 admin 框架有如下优势:
-1. 支持前端控制路由权限 intelligence、后端控制路由权限 all 模式
-2. 已知开源 vue admin 框架中首家支持 mock 自动生成自动导出功能
-3. 提供 50 余项全局精细化配置
-4. 支持 scss 自动排序，eslint 自动修复
-5. axios 精细化封装，支持多数据源、多成功 code 数组，支持 application/json;charset=UTF-8、application/x-www-form-urlencoded;charset=UTF-8 多种传参方式
-6. 支持登录RSA加密
-7. 支持打包自动生成7Z压缩包
-8. 支持errorlog错误拦截
-9. 支持多主题、多布局切换
+1. 使用vue项目自带命令创建view、api、store等文件
 
-vue-admin-beautiful-pro 使用注意事项:
-1. 项目默认使用lf换行符而非crlf换行符，新建文件时请注意选择文件换行符
-2. 项目默认使用的最严格的eslint校验规范（plugin:vue/recommended），使用之前建议配置开发工具实现自动修复（建议使用vscode开发）
-3. 项目使用的是要求最宽泛的MIT开源协议，保留MIT开源协议即可免费商用
+   ~~~bash
+   # 创建 view
+   npm run template
+   #选择创建view，填入名称会自动为您创建
+   
+   # 创建 api 与 mock
+   npm run template
+   #选择创建mock，填入名称会自动为您创建
+   
+   # 新增组件
+   npm run template
+   #选择创建components，填入名称会自动为您创建
+   
+   # 新增 store
+   npm run template
+   #选择创建vuex，填入名称会自动为您创建
+   ~~~
 
-```
+   ![image-20210722204144656](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722204144656.png)
 
-## 适合人群
+   ![image-20210722204430474](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722204430474.png)
 
-- 正在以及想使用 element-ui/element-plus 开发，前端开发经验 1 年+。
-- 熟悉 Vue.js 技术栈，使用它开发过几个实际项目。
-- 对原理技术感兴趣，想进阶和提升的同学。
+   思路：从view页面实现某一函数，该函数调用store的方法，store方法引入api的访问接口函数，从而访问后端，并且在sotre中设计处理返回值的方法。
 
-## 功能地图：
+2. 查看配置文件（***src\config\setting.config.js***）是否已经修改了baseurl
 
-![img](https://gitee.com/chu1204505056/image/raw/master/vip/flow.drawio.png)
+   ~~~js
+     // 默认的接口地址 如果是开发环境和生产环境走vab-mock-server，当然你也可以选择自己配置成需要的接口地址
+     // “ ? ” 后面配置配置开发环境
+     // “ : ” 后面配置生成环境
+     baseURL:
+       process.env.NODE_ENV === 'development'
+         ? 'vab-mock-server'
+         : 'vab-mock-server',
+   ~~~
 
-## 特性：
+   例如：修改如下所示
 
-- 支持 PC、手机端、平板；
-- 提供超过 50 余项全局精细化配置；
-- 支持后端渲染动态路由
-- 拥有完整的登录鉴权和前后端多种配置的动态路由流程
-- 支持前端控制路由权限 intelligence、后端控制路由权限 all 模式
-- 支持 mock 自动生成自动导出功能
-- 支持 scss 自动排序，eslint 自动修复
-- 支持登录 RSA 加密
-- 支持打包自动生成 7Z 压缩包以及自动化部署
-- 支持 errorlog 错误拦截
-- 支持多主题、多布局切换
+   ~~~js
+   baseURL:
+   process.env.NODE_ENV === 'development'
+       ? 'http://127.0.0.1:8099'
+   	: 'http://127.0.0.1:8099',
+   ~~~
 
-## 效果图
+3. 修改api函数
 
-以下是截取的是 pro 版的效果图展示：
+   ~~~js
+   // api例子
+   
+   import request from "@/utils/request";
+   
+   export function getList(data) {
+     return request({
+       url: "/table/list",
+       method: "post",
+       data,
+     });
+   }
+   ~~~
 
-<table>
-<tr>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/2.png">
-</td>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/6.png">
-</td>
-</tr>
-<tr>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/8.png">
-</td>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/9.png">
-</td>
-</tr>
-<tr>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/3.png">
-</td>
-<td>
-<img src="https://gitee.com/chu1204505056/image/raw/master/5.png">
-</td>
-</tr>
-</table>
+   ![image-20210723204729025](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723204729025.png)
 
-## 商用注意事项
+4. 修改store函数
 
-此项目可免费用于商业用途，请遵守 MIT 协议并保留作者技术支持声明，如需自定义版权信息请联系客服 QQ 783963206。
+   store需要写好三个部分（state，commit，actions）
 
-<!-- ## 严正声明
+   如下方例子：
 
-近期发现不少游手好闲之人有组织有预谋的利用码云、知乎、掘金等网站可用国外非法网站提供的匿名手机号注册的账号 bug 冒充 vab 去攻击 vue-element-admin，iview-admin，若依，d2-admin，ant-design-vue 的行为，恶意制造对立，试图让其他开源作者卷入其中，对各位开源作者造成的影响我们深表歉意，我们欢迎 vab 的用户去体验其他更优秀的框架，vue-admin-beautiful 走到今天实属不易，被人冒充，被人发帖诋毁，被人故意发布错误言论假装发帖表扬实则为我们招骂，无意动任何人的奶酪，从 2020 年至今坚持全职维护已过一年时间，说实在的我们靠技术生存并不丢人吧，一年来感谢 vab 的用户对我们不离不弃，也希望大家越来越好，加油！ -->
+   ~~~js
+   // src\store\modules\myselfstoretest.js
+   
+   import Vue from 'vue'
+   import {
+     getUser,
+     getLoginInfo,
+     deleteLoginInfo,
+   } from '../../api/myself_api_test'
+   
+   const state = {
+     myself_api_test: [],
+   }
+   
+   const mutations = {
+     setMyselfApiTest(state, myself_api_test) {
+       if (myself_api_test) {
+         state.myself_api_test = myself_api_test
+       } else {
+         state.myself_api_test = []
+       }
+     },
+   }
+   
+   const actions = {
+     setMyselfApiTest({ commit }, myself_api_test) {
+       commit('setMyselfApiTest', myself_api_test)
+     },
+   
+     // 异步请求后端的方法
+     async logintest({ commit }, datainfo) {
+       const { _datainfo } = await getLoginInfo(datainfo)
+       if (_datainfo) {
+         commit('setMyselfApiTest', _datainfo)
+         Vue.prototype.$baseNotify(`欢迎登录`)
+       } else {
+         Vue.prototype.$baseMessage(`登录接口异常，未正确返回`, 'error')
+       }
+     },
+   }
+   
+   export default {
+     state,
+     mutations,
+     actions,
+   }
+   ~~~
+
+   逐步分析开始：
+
+   1. 引入必要的方法
+
+      ![image-20210723205153462](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723205153462.png)
+
+   2. 定义所需要的状态
+
+      ![image-20210723205300466](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723205300466.png)
+
+   3. 定义actions方法，这里的方法主要负责异步访问api，和提交commit等功能
+
+      ![image-20210723205629735](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723205629735.png)
+
+   4. 修改commit方法。commit方法是用来改变state状态的，这也是commit和actions的区别。并且从view发布过来的任务都是用actions接收
+
+      ![image-20210723205923354](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723205923354.png)
+
+   5. 至此store的三个重要部分修改完毕，接下来可以从view页面定义一些方法来对store发布任务从而实现状态数的改变等操作。
+
+5. 开始修改view页面
+
+   > view页面对发布store的行动是十分多变的。
+   >
+   > 触发方式可以有非常多，由开发者思考来做更好的处理
+   >
+   > 以下为最简单的一个必要步骤讲解
+
+   ~~~js
+   // 这是触发store的actions的代码，但是这段代码应该是嵌入在其他的js函数中。作为其他函数功能中的一部分（发布store行动的一部分，也可以说是修改状态数或者修改存储数据的一部分）
+   
+   this.$store
+   	.dispatch('myselfstoretest/logintest', this.datainfo)
+   	.then(() => {
+   		this.datainfo['userid'] = '200'
+   	   })
+   	 .catch(() => {
+           this.loading = false
+          })
+   ~~~
+
+   ![image-20210723211013399](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723211013399.png)
+
+6. 编写后端对应接口
+
+   > 此篇蚊帐为前端的模板剖析将不深入分析后端实现
+   >
+   > 可以参考模板中的mock来编写后端接口
+
+   ~~~json
+   // 后端返回 JSON 数据的约定
+   
+   {
+     "code": 200,//成功的状态码
+     "msg": "success",//提示信息
+     "totalCount": 238,//总条数（表格中用到）
+     "data": [{}，{}，{}]//返回数据
+   }
+   ~~~
+
+7. 测试
+
+   > 声明：
+   >
+   > 1. 前端仅实现一个按钮
+   > 2. 后端仅实现一个post请求
+   > 3. 功能仅仅是测试以上修改是否有效
+   > 4. 具体思路为，页面展示了一个数据，在点击按钮之后，前端会发生post请求到后端。后端接受请求后将发送一个message给前端。前端成功接受则修改页面所展示的数据。
+
+   1. 点击按钮前
+
+      ![image-20210723220218231](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723220218231.png)
+
+      清空前后端控制台
+
+   2. 点击按钮
+
+      后端收到前端的post请求
+
+      使用 @RequestBody 接受post所携带的参数
+
+      ![image-20210723220422097](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723220422097.png)
+
+      ![image-20210723220323850](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723220323850.png)
+
+      前端接受到后端反馈后显示如下（与上方格式相对应）：
+
+      > code 200 才能让前端正确接收
+      >
+      > data 携带后端所给的数据
+      >
+      > msg 是后端给前端的一些信息提示
+
+      ![image-20210723220451738](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723220451738.png)
+
+      然后页面改变
+
+      ![image-20210723220615527](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210723220615527.png)
+
+      至此前后端交互成功。
+
+## Echarts图表的修改和使用
+
+
+
+## 各种页面的配置零散记录
+
+#### 去除右边的“ 拷贝源码”
+
+注释 “src\layouts\components\VabThemeBar\index.vue”的html代码
+
+![image-20210722203915977](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722203915977.png)
+
+![image-20210722203723173](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722203723173.png)
+
