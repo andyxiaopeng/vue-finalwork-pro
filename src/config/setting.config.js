@@ -39,11 +39,13 @@ const setting = {
   //token在localStorage、sessionStorage存储的key的名称
   tokenTableName: 'vue-admin-beautiful-2021',
   //token存储位置localStorage sessionStorage
-  storage: 'localStorage',
+  // storage: 'localStorage',
+  storage: 'sessionStorage',
   //token失效回退到登录页时是否记录本次的路由
   recordRoute: true,
   //是否显示logo，不显示时设置false，显示时请填写remixIcon图标名称，暂时只支持设置remixIcon
-  logo: 'vuejs-fill',
+  logo: 'false',
+  // logo: 'vuejs-fill',
   //是否显示在页面高亮错误
   errorLog: ['development', 'production'],
   //是否开启登录拦截
@@ -65,6 +67,6 @@ const setting = {
   //代码生成机生成在view下的文件夹名称
   templateFolder: 'project',
   //是否显示终端donation打印
-  donation: true,
+  donation: false,
 }
 module.exports = setting

@@ -72,7 +72,7 @@ module.exports = [
         code: 200,
         msg: 'success',
         data: {
-          permissions,
+          permissions, // 该账号所拥有的权限，以数组的形式存在 ['admin', 'editor']
           username,
           'avatar|1': [
             'https://i.gtimg.cn/club/item/face/img/2/15922_100.gif',

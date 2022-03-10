@@ -10,6 +10,7 @@ import EmptyLayout from '@/layouts/EmptyLayout'
 import { publicPath, routerMode } from '@/config'
 
 Vue.use(VueRouter)
+// 白名单的页面
 export const constantRoutes = [
   {
     path: '/login',
@@ -35,6 +36,7 @@ export const constantRoutes = [
   },
 ]
 
+// 非白名单页面，可增加访问权限设置
 export const asyncRoutes = [
   {
     path: '/',

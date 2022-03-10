@@ -99,8 +99,8 @@
         selectRows: '',
         elementLoadingText: '正在加载...',
         queryForm: {
-          pageNo: 1,
-          pageSize: 10,
+          pageNo: 1, //当前位于哪一页
+          pageSize: 10, //每一页的信息条数
           username: '',
         },
       }
@@ -155,6 +155,15 @@
       async fetchData() {
         this.listLoading = true
         const { data, totalCount } = await getList(this.queryForm)
+
+        // self 修改
+        data.forEach((element, index, data) => {
+          let str = element.permissions.split(',')
+          data[index].permissions = str
+        })
+        console.log(data)
+        // self 修改
+
         this.list = data
         this.total = totalCount
         setTimeout(() => {

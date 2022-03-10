@@ -45,10 +45,10 @@ const actions = {
     commit('setPermissions', permissions)
   },
   async login({ commit }, userInfo) {
-    const { data } = await login(userInfo)
+    const { data } = await login(userInfo) // 获取accessToken
     const accessToken = data[tokenName]
     if (accessToken) {
-      commit('setAccessToken', accessToken)
+      commit('setAccessToken', accessToken) // 设置state的accessToken值
       const hour = new Date().getHours()
       const thisTime =
         hour < 8
