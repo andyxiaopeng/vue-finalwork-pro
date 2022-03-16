@@ -333,9 +333,9 @@
 
 
 
-## 各种页面的配置零散记录
+## 各种页面的配置零散记录——layout部分
 
-#### 去除右边的“ 拷贝源码”
+### 去除右边的“ 拷贝源码”
 
 注释 “src\layouts\components\VabThemeBar\index.vue”的html代码
 
@@ -343,3 +343,26 @@
 
 ![image-20210722203723173](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20210722203723173.png)
 
+### 设置头像按钮选项列表
+
+修改“src\layouts\components\VabAvatar\index.vue”文件的html代码
+
+![image-20220316210841746](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20220316210841746.png)
+
+### 删除右边github图标链接
+
+注释“src\layouts\components\VabAppMain\index.vue”的“<vab-github-corner />”代码
+
+![image-20220316211250090](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20220316211250090.png)
+
+### 修改路由标题
+
+修改"src\config\setting.config.js"的title选项
+
+### 修改加载页面名称
+
+### 修改主页面前的附赠标题
+
+注释“src\layouts\index.vue”的两处“<vab-ad />”
+
+![image-20220316221631182](https://gitee.com/andyxiaopeng/picbed/raw/master/pic/image-20220316221631182.png)

@@ -37,7 +37,7 @@
       <el-table-column
         show-overflow-tooltip
         prop="id"
-        label="id"
+        label="用户的id"
       ></el-table-column>
       <el-table-column
         show-overflow-tooltip
@@ -60,12 +60,12 @@
 
       <el-table-column
         show-overflow-tooltip
-        prop="datatime"
-        label="修改时间"
+        prop="creattime"
+        label="创建时间"
       ></el-table-column>
       <el-table-column show-overflow-tooltip label="操作" width="200">
         <template #default="{ row }">
-          <el-button type="text" @click="handleEdit(row)">编辑</el-button>
+          <!-- <el-button type="text" @click="handleEdit(row)">编辑</el-button> -->
           <el-button type="text" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -161,7 +161,7 @@
           let str = element.permissions.split(',')
           data[index].permissions = str
         })
-        console.log(data)
+        console.log(totalCount)
         // self 修改
 
         this.list = data

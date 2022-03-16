@@ -289,20 +289,20 @@ export const asyncRoutes = [
           import('@/views/personnelManagement/userManagement/index'),
         meta: { title: '用户管理' },
       },
-      {
-        path: 'roleManagement',
-        name: 'RoleManagement',
-        component: () =>
-          import('@/views/personnelManagement/roleManagement/index'),
-        meta: { title: '角色管理' },
-      },
-      {
-        path: 'menuManagement',
-        name: 'MenuManagement',
-        component: () =>
-          import('@/views/personnelManagement/menuManagement/index'),
-        meta: { title: '菜单管理', badge: 'New' },
-      },
+      // {
+      //   path: 'roleManagement',
+      //   name: 'RoleManagement',
+      //   component: () =>
+      //     import('@/views/personnelManagement/roleManagement/index'),
+      //   meta: { title: '角色管理' },
+      // },
+      // {
+      //   path: 'menuManagement',
+      //   name: 'MenuManagement',
+      //   component: () =>
+      //     import('@/views/personnelManagement/menuManagement/index'),
+      //   meta: { title: '菜单管理', badge: 'New' },
+      // },
     ],
   },
   {
