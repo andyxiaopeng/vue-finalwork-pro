@@ -1,52 +1,6 @@
 <template>
   <div class="index-container">
     <el-row :gutter="20">
-      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
-        <el-card shadow="never">
-          <div slot="header">
-            <span>访问量</span>
-          </div>
-          <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
-          <div class="bottom">
-            <span>
-              日均访问量:
-
-              <vab-count
-                :start-val="config1.startVal"
-                :end-val="config1.endVal"
-                :duration="config1.duration"
-                :separator="config1.separator"
-                :prefix="config1.prefix"
-                :suffix="config1.suffix"
-                :decimals="config1.decimals"
-              />
-            </span>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
-        <el-card shadow="never">
-          <div slot="header">
-            <span>授权数</span>
-          </div>
-          <vab-chart auto-resize theme="vab-echarts-theme" :option="sqs" />
-          <div class="bottom">
-            <span>
-              总授权数:
-              <vab-count
-                :start-val="config2.startVal"
-                :end-val="config2.endVal"
-                :duration="config2.duration"
-                :separator="config2.separator"
-                :prefix="config2.prefix"
-                :suffix="config2.suffix"
-                :decimals="config2.decimals"
-              />
-            </span>
-          </div>
-        </el-card>
-      </el-col> -->
-
       <el-col
         v-for="(item, index) in iconList"
         :key="index"
@@ -73,72 +27,15 @@
             <span>依赖信息</span>
             <div style="float: right">部署时间:{{ updateTime }}</div>
           </div>
-          <!-- <div class="bottom-btn">
-            <a @click="handleChangeTheme">
-              <el-button type="danger">修改主题和布局</el-button>
-            </a>
-          </div> -->
+
           <div>
             <el-card shadow="never">
               <div slot="header">
                 <span>访问量</span>
               </div>
               <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
-              <div class="bottom">
-                <span>
-                  日均访问量:
-
-                  <vab-count
-                    :start-val="config1.startVal"
-                    :end-val="config1.endVal"
-                    :duration="config1.duration"
-                    :separator="config1.separator"
-                    :prefix="config1.prefix"
-                    :suffix="config1.suffix"
-                    :decimals="config1.decimals"
-                  />
-                </span>
-              </div>
             </el-card>
           </div>
-          <!-- <table class="table">
-            <tr>
-              <td>@vue/cli版本</td>
-              <td>{{ devDependencies['@vue/cli-service'] }}</td>
-              <td>vue版本</td>
-              <td>{{ dependencies['vue'] }}</td>
-            </tr>
-            <tr>
-              <td>vuex版本</td>
-              <td>{{ dependencies['vuex'] }}</td>
-              <td>vue-router版本</td>
-              <td>{{ dependencies['vue-router'] }}</td>
-            </tr>
-            <tr>
-              <td>element-ui版本</td>
-              <td>{{ dependencies['element-ui'] }}</td>
-              <td>axios版本</td>
-              <td>{{ dependencies['axios'] }}</td>
-            </tr>
-            <tr>
-              <td>eslint版本</td>
-              <td>{{ devDependencies['eslint'] }}</td>
-              <td>prettier版本</td>
-              <td>{{ devDependencies['prettier'] }}</td>
-            </tr>
-            <tr>
-              <td>sass版本</td>
-              <td>{{ devDependencies['sass'] }}</td>
-              <td>mockjs版本</td>
-              <td>{{ dependencies['mockjs'] }}</td>
-            </tr>
-            <tr>
-              <td>zx-layouts版本</td>
-              <td>{{ dependencies['zx-layouts'] }}</td>
-              <td>lodash版本</td>
-              <td>{{ dependencies['lodash'] }}</td>
-            </tr>
-          </table> -->
         </el-card>
       </el-col>
 
@@ -188,33 +85,6 @@
         nodeEnv: process.env.NODE_ENV,
         dependencies: dependencies,
         devDependencies: devDependencies,
-        config1: {
-          startVal: 0,
-          endVal: this.$baseLodash.random(20000, 60000),
-          decimals: 0,
-          prefix: '',
-          suffix: '',
-          separator: ',',
-          duration: 8000,
-        },
-        config2: {
-          startVal: 0,
-          endVal: this.$baseLodash.random(1000, 20000),
-          decimals: 0,
-          prefix: '',
-          suffix: '',
-          separator: ',',
-          duration: 8000,
-        },
-        config3: {
-          startVal: 0,
-          endVal: this.$baseLodash.random(1000, 20000),
-          decimals: 0,
-          prefix: '',
-          suffix: '',
-          separator: ',',
-          duration: 8000,
-        },
 
         //访问量
         fwl: {
@@ -498,6 +368,7 @@
         data.push(this.$baseLodash.random(20000, 60000))
 
         if (shift) {
+          //shift() 方法用于把数组的第一个元素从其中删除
           date.shift()
           data.shift()
         }
@@ -512,6 +383,7 @@
       this.fwl.xAxis[0].data = date
       this.fwl.series[0].data = data
       this.timer = setInterval(() => {
+        // 删除数组第一个，再后续添加一个，相当于时序变化
         addData(true)
         this.fwl.xAxis[0].data = date
         this.fwl.series[0].data = data
@@ -532,7 +404,7 @@
             item.color = '#0bbd87'
           }
         })
-        this.activities = data
+        this.activities = data.slice(data.length - 7, data.length)
         // const res = await getNoticeList()
         // this.noticeList = res.data
         /* getRepos({

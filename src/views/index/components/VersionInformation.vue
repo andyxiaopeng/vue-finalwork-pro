@@ -26,8 +26,10 @@
           <td>{{ dependencies['axios'] }}</td>
         </tr>
         <tr>
-          <td>授权渠道</td>
-          <td colspan="3">
+          <td>项目：</td>
+          <td>IOT_HYDROGEN</td>
+          <td colspan="2">加氢站能效优化控制系统</td>
+          <!-- <td colspan="3">
             <el-popover trigger="hover" width="400">
               <div style="text-align: center">
                 <el-image
@@ -99,7 +101,7 @@
                 开源免费版
               </el-button>
             </a>
-          </td>
+          </td> -->
         </tr>
       </table>
     </el-scrollbar>

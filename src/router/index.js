@@ -306,6 +306,45 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: '/project',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'DataShow',
+    meta: {
+      title: '数据',
+      icon: 'box',
+      permissions: ['admin', 'editor'],
+    },
+    children: [
+      {
+        path: 'dataShow',
+        name: 'dataShow',
+        component: () => import('@/views/project/dataShow/index'),
+        meta: { title: '数据展示' },
+      },
+      {
+        path: 'arithmeticShow',
+        name: 'arithmeticShow',
+        component: () => import('@/views/project/arithmeticShow/index'),
+        meta: { title: '算法展示' },
+      },
+      // {
+      //   path: 'roleManagement',
+      //   name: 'RoleManagement',
+      //   component: () =>
+      //     import('@/views/personnelManagement/roleManagement/index'),
+      //   meta: { title: '角色管理' },
+      // },
+      // {
+      //   path: 'menuManagement',
+      //   name: 'MenuManagement',
+      //   component: () =>
+      //     import('@/views/personnelManagement/menuManagement/index'),
+      //   meta: { title: '菜单管理', badge: 'New' },
+      // },
+    ],
+  },
+  {
     path: '/mall',
     component: Layout,
     redirect: 'noRedirect',
