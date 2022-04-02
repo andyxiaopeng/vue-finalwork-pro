@@ -4,20 +4,28 @@
       <el-col :span="12">
         <el-card class="card">
           <div slot="header">
-            <span>压力变化图</span>
+            <span>压缩机A的压力变化图</span>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart
+              auto-resize
+              theme="vab-echarts-theme"
+              :option="compressorAt"
+            />
           </div>
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card class="card">
           <div slot="header">
-            <span>温度变化图</span>
+            <span>压缩机A的温度变化图</span>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart
+              auto-resize
+              theme="vab-echarts-theme"
+              :option="compressorAp"
+            />
           </div>
         </el-card>
       </el-col>
@@ -26,20 +34,28 @@
       <el-col :span="12">
         <el-card class="card">
           <div slot="header">
-            <span>加氢量</span>
+            <span>压缩机B的压力变化图</span>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart
+              auto-resize
+              theme="vab-echarts-theme"
+              :option="compressorBt"
+            />
           </div>
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card class="card">
           <div slot="header">
-            <span>能效优化次数</span>
+            <span>压缩机B的温度变化图</span>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart
+              auto-resize
+              theme="vab-echarts-theme"
+              :option="compressorBp"
+            />
           </div>
         </el-card>
       </el-col>
@@ -49,6 +65,7 @@
 
 <script>
   import VabChart from '@/plugins/echarts'
+  import { getList } from '@/api/dataShow'
 
   export default {
     name: 'DataShow',
@@ -91,45 +108,226 @@
             },
           ],
         },
+        compressorAt: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          series: [
+            {
+              name: '访问量',
+              type: 'line',
+              data: [],
+              smooth: true,
+              areaStyle: {},
+            },
+          ],
+        },
+
+        compressorBt: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          series: [
+            {
+              name: '访问量',
+              type: 'line',
+              data: [],
+              smooth: true,
+              areaStyle: {},
+            },
+          ],
+        },
+
+        compressorAp: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          series: [
+            {
+              name: '访问量',
+              type: 'line',
+              data: [],
+              smooth: true,
+              areaStyle: {},
+            },
+          ],
+        },
+
+        compressorBp: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          series: [
+            {
+              name: '访问量',
+              type: 'line',
+              data: [],
+              smooth: true,
+              areaStyle: {},
+            },
+          ],
+        },
       }
     },
     created() {},
     mounted() {
-      let base = +new Date(2020, 1, 1)
-      let oneDay = 24 * 3600 * 1000
+      let base = +new Date()
+      let intervalTime = 3000
       let date = []
 
-      let data = [Math.random() * 1500]
+      let data1 = []
+      let data2 = []
+      let data3 = []
+      let data4 = []
       let now = new Date(base)
 
       const addData = (shift) => {
-        now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-        date.push(now)
-        data.push(this.$baseLodash.random(20000, 60000))
+        // now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
+        let nowstr = [now.getHours(), now.getMinutes(), now.getSeconds()].join(
+          ':'
+        )
+        date.push(nowstr)
+        this.fetchData().then((res) => {
+          console.log(res)
+          data1.push(res['compressor-Apressure'])
+          data2.push(res['compressor-Atemperature'])
+          data3.push(res['compressor-Btemperature'])
+          data4.push(res['compressor-Bpressure'])
+        })
 
         if (shift) {
           //shift() 方法用于把数组的第一个元素从其中删除
           date.shift()
-          data.shift()
+          data1.shift()
+          data2.shift()
+          data3.shift()
+          data4.shift()
         }
 
-        now = new Date(+new Date(now) + oneDay)
+        now = new Date(+new Date(now) + intervalTime)
       }
 
-      for (let i = 1; i < 6; i++) {
+      for (let i = 1; i < 21; i++) {
         addData()
       }
       addData(true)
       this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data
+      this.fwl.series[0].data = data1
+
+      this.compressorAt.xAxis[0].data = date
+      this.compressorAt.series[0].data = data1
+
+      this.compressorAp.xAxis[0].data = date
+      this.compressorAp.series[0].data = data2
+
+      this.compressorBt.xAxis[0].data = date
+      this.compressorBt.series[0].data = data3
+
+      this.compressorBp.xAxis[0].data = date
+      this.compressorBp.series[0].data = data4
+
       this.timer = setInterval(() => {
         // 删除数组第一个，再后续添加一个，相当于时序变化
         addData(true)
         this.fwl.xAxis[0].data = date
-        this.fwl.series[0].data = data
+        this.fwl.series[0].data = data1
+
+        this.compressorAt.xAxis[0].data = date
+        this.compressorAt.series[0].data = data1
+
+        this.compressorAp.xAxis[0].data = date
+        this.compressorAp.series[0].data = data2
+
+        this.compressorBt.xAxis[0].data = date
+        this.compressorBt.series[0].data = data3
+
+        this.compressorBp.xAxis[0].data = date
+        this.compressorBp.series[0].data = data4
       }, 3000)
     },
-    methods: {},
+    methods: {
+      async fetchData() {
+        const { data } = await getList()
+        // console.log(data)
+        return data
+      },
+    },
   }
 </script>
 <style lang="scss" scoped>

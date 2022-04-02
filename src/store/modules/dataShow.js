@@ -1,3 +1,5 @@
+import { getListt } from '@/api/dataShow'
+
 const state = {
   dataShow: [],
 }

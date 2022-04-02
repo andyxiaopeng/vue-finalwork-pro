@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export function getList(params) {
   return request({
     url: '/dataShow/getList',
-    method: 'get',
+    method: 'post',
     params,
   })
 }
