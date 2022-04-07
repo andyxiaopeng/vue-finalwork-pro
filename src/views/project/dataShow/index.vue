@@ -10,7 +10,7 @@
             <vab-chart
               auto-resize
               theme="vab-echarts-theme"
-              :option="compressorAt"
+              :option="compressorAp"
             />
           </div>
         </el-card>
@@ -24,7 +24,7 @@
             <vab-chart
               auto-resize
               theme="vab-echarts-theme"
-              :option="compressorAp"
+              :option="compressorAt"
             />
           </div>
         </el-card>
@@ -40,7 +40,7 @@
             <vab-chart
               auto-resize
               theme="vab-echarts-theme"
-              :option="compressorBt"
+              :option="compressorBp"
             />
           </div>
         </el-card>
@@ -54,7 +54,7 @@
             <vab-chart
               auto-resize
               theme="vab-echarts-theme"
-              :option="compressorBp"
+              :option="compressorBt"
             />
           </div>
         </el-card>
@@ -104,7 +104,7 @@
               type: 'line',
               data: [],
               smooth: true,
-              areaStyle: {},
+              areaStyle: {}, // 曲线面积
             },
           ],
         },
@@ -133,7 +133,7 @@
           ],
           series: [
             {
-              name: '访问量',
+              name: '压缩机出口温度',
               type: 'line',
               data: [],
               smooth: true,
@@ -167,7 +167,7 @@
           ],
           series: [
             {
-              name: '访问量',
+              name: '压缩机出口温度',
               type: 'line',
               data: [],
               smooth: true,
@@ -201,11 +201,18 @@
           ],
           series: [
             {
-              name: '访问量',
+              name: '压缩机进口压力',
               type: 'line',
               data: [],
               smooth: true,
-              areaStyle: {},
+              // areaStyle: {},
+            },
+            {
+              name: '压缩机出口压力',
+              type: 'line',
+              data: [],
+              smooth: true,
+              // areaStyle: {},
             },
           ],
         },
@@ -235,11 +242,18 @@
           ],
           series: [
             {
-              name: '访问量',
+              name: '压缩机进口压力',
               type: 'line',
               data: [],
               smooth: true,
-              areaStyle: {},
+              // areaStyle: {},
+            },
+            {
+              name: '压缩机出口压力',
+              type: 'line',
+              data: [],
+              smooth: true,
+              // areaStyle: {},
             },
           ],
         },
@@ -255,6 +269,8 @@
       let data2 = []
       let data3 = []
       let data4 = []
+      let data5 = []
+      let data6 = []
       let now = new Date(base)
 
       const addData = (shift) => {
@@ -265,10 +281,13 @@
         date.push(nowstr)
         this.fetchData().then((res) => {
           console.log(res)
-          data1.push(res['compressor-Apressure'])
-          data2.push(res['compressor-Atemperature'])
-          data3.push(res['compressor-Btemperature'])
-          data4.push(res['compressor-Bpressure'])
+          data1.push(res['compressor-ApressureInt'])
+          data2.push(res['compressor-ApressureOut'])
+          data3.push(res['compressor-Atemperature'])
+
+          data4.push(res['compressor-BpressureInt'])
+          data5.push(res['compressor-BpressureOut'])
+          data6.push(res['compressor-Btemperature'])
         })
 
         if (shift) {
@@ -277,13 +296,16 @@
           data1.shift()
           data2.shift()
           data3.shift()
+
           data4.shift()
+          data5.shift()
+          data6.shift()
         }
 
         now = new Date(+new Date(now) + intervalTime)
       }
 
-      for (let i = 1; i < 21; i++) {
+      for (let i = 1; i < 51; i++) {
         addData()
       }
       addData(true)
@@ -291,16 +313,18 @@
       this.fwl.series[0].data = data1
 
       this.compressorAt.xAxis[0].data = date
-      this.compressorAt.series[0].data = data1
+      this.compressorAt.series[0].data = data3
 
       this.compressorAp.xAxis[0].data = date
-      this.compressorAp.series[0].data = data2
+      this.compressorAp.series[0].data = data1
+      this.compressorAp.series[1].data = data2
 
       this.compressorBt.xAxis[0].data = date
-      this.compressorBt.series[0].data = data3
+      this.compressorBt.series[0].data = data6
 
       this.compressorBp.xAxis[0].data = date
       this.compressorBp.series[0].data = data4
+      this.compressorBp.series[1].data = data5
 
       this.timer = setInterval(() => {
         // 删除数组第一个，再后续添加一个，相当于时序变化
@@ -309,16 +333,18 @@
         this.fwl.series[0].data = data1
 
         this.compressorAt.xAxis[0].data = date
-        this.compressorAt.series[0].data = data1
+        this.compressorAt.series[0].data = data3
 
         this.compressorAp.xAxis[0].data = date
-        this.compressorAp.series[0].data = data2
+        this.compressorAp.series[0].data = data1
+        this.compressorAp.series[1].data = data2
 
         this.compressorBt.xAxis[0].data = date
-        this.compressorBt.series[0].data = data3
+        this.compressorBt.series[0].data = data6
 
         this.compressorBp.xAxis[0].data = date
         this.compressorBp.series[0].data = data4
+        this.compressorBp.series[1].data = data5
       }, 3000)
     },
     methods: {

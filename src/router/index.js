@@ -78,7 +78,8 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'Vab',
-    alwaysShow: true,
+    alwaysShow: false,
+    hidden: true,
     meta: { title: '组件', icon: 'box-open' },
     children: [
       {
@@ -280,7 +281,8 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'PersonnelManagement',
-    meta: { title: '配置', icon: 'users-cog', permissions: ['admin'] },
+    alwaysShow: true,
+    meta: { title: '用户管理', icon: 'users-cog', permissions: ['admin'] },
     children: [
       {
         path: 'userManagement',
@@ -289,20 +291,6 @@ export const asyncRoutes = [
           import('@/views/personnelManagement/userManagement/index'),
         meta: { title: '用户管理' },
       },
-      // {
-      //   path: 'roleManagement',
-      //   name: 'RoleManagement',
-      //   component: () =>
-      //     import('@/views/personnelManagement/roleManagement/index'),
-      //   meta: { title: '角色管理' },
-      // },
-      // {
-      //   path: 'menuManagement',
-      //   name: 'MenuManagement',
-      //   component: () =>
-      //     import('@/views/personnelManagement/menuManagement/index'),
-      //   meta: { title: '菜单管理', badge: 'New' },
-      // },
     ],
   },
   {
@@ -311,7 +299,7 @@ export const asyncRoutes = [
     redirect: 'noRedirect',
     name: 'DataShow',
     meta: {
-      title: '数据',
+      title: '数据运算',
       icon: 'box',
       permissions: ['admin', 'editor'],
     },
@@ -323,56 +311,16 @@ export const asyncRoutes = [
         meta: { title: '数据展示' },
       },
       {
+        path: 'arithmeticTrain',
+        name: 'arithmeticTrain',
+        component: () => import('@/views/project/arithmeticTrain/index'),
+        meta: { title: '算法模型训练' },
+      },
+      {
         path: 'arithmeticShow',
         name: 'arithmeticShow',
         component: () => import('@/views/project/arithmeticShow/index'),
-        meta: { title: '算法展示' },
-      },
-      // {
-      //   path: 'roleManagement',
-      //   name: 'RoleManagement',
-      //   component: () =>
-      //     import('@/views/personnelManagement/roleManagement/index'),
-      //   meta: { title: '角色管理' },
-      // },
-      // {
-      //   path: 'menuManagement',
-      //   name: 'MenuManagement',
-      //   component: () =>
-      //     import('@/views/personnelManagement/menuManagement/index'),
-      //   meta: { title: '菜单管理', badge: 'New' },
-      // },
-    ],
-  },
-  {
-    path: '/mall',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'Mall',
-    meta: {
-      title: '商城',
-      icon: 'shopping-cart',
-      permissions: ['admin'],
-    },
-
-    children: [
-      {
-        path: 'pay',
-        name: 'Pay',
-        component: () => import('@/views/mall/pay/index'),
-        meta: {
-          title: '支付',
-          noKeepAlive: true,
-        },
-        children: null,
-      },
-      {
-        path: 'goodsList',
-        name: 'GoodsList',
-        component: () => import('@/views/mall/goodsList/index'),
-        meta: {
-          title: '商品列表',
-        },
+        meta: { title: '模型时序预测' },
       },
     ],
   },

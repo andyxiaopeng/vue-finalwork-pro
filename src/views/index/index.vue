@@ -16,12 +16,12 @@
               :style="{ color: item.color }"
               :icon="['fas', item.icon]"
             ></vab-icon>
-            <p>{{ item.title }}</p>
+            <p>{{ item.title }}{{ item.data }}</p>
           </el-card>
         </router-link>
       </el-col>
 
-      <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="11">
+      <el-col :span="18">
         <el-card class="card" shadow="never">
           <div slot="header">
             <span>依赖信息</span>
@@ -39,7 +39,7 @@
         </el-card>
       </el-col>
 
-      <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="13">
+      <el-col :span="6">
         <el-card class="card" shadow="never">
           <div slot="header">
             <span>更新日志</span>
@@ -297,28 +297,32 @@
         //卡片图标
         iconList: [
           {
-            icon: 'video',
-            title: '视频播放器',
-            link: '/vab/player',
+            icon: 'th-large',
+            title: '采集的数据类型数量：',
+            link: '',
             color: '#ffc069',
+            data: 0,
           },
           {
-            icon: 'table',
-            title: '表格',
-            link: '/vab/table/comprehensiveTable',
+            icon: 'random',
+            title: '总访客量：',
+            link: '',
             color: '#5cdbd3',
+            data: 0,
           },
           {
-            icon: 'laptop-code',
-            title: '源码',
-            link: 'https://github.com/chuzhixin/vue-admin-beautiful',
+            icon: 'database',
+            title: '数据量：',
+            link: '',
             color: '#b37feb',
+            data: 0,
           },
           {
-            icon: 'book',
-            title: '书籍',
+            icon: 'users',
+            title: '用户量：',
             link: '',
             color: '#69c0ff',
+            data: 0,
           },
           // {
           //   icon: 'bullhorn',

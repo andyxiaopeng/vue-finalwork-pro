@@ -1,41 +1,12 @@
 <template>
-  <div class="arithmeticShow-container">
+  <div class="arithmeticTrain-container">
     <el-row>
       <el-col :span="24">
         <el-card class="card">
           <div slot="header">
-            <span>时序数据模型预测</span>
+            <span>离线数据模型训练</span>
             <el-button type="primary" class="cardbutton">
-              实时预测开始
-            </el-button>
-          </div>
-          <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12">
-        <el-card class="card">
-          <div slot="header">
-            <span>动态阈值</span>
-            <el-button type="primary" class="cardbutton">
-              实时预测开始
-            </el-button>
-          </div>
-          <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="12">
-        <el-card class="card">
-          <div slot="header">
-            <span>压缩机工作状态</span>
-            <el-button type="primary" class="cardbutton">
-              实时预测开始
+              模型训练开始
             </el-button>
           </div>
           <div>
@@ -51,7 +22,7 @@
   import VabChart from '@/plugins/echarts'
 
   export default {
-    name: 'ArithmeticShow',
+    name: 'ArithmeticTrain',
     components: { VabChart },
     data() {
       return {
@@ -143,7 +114,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .arithmeticShow-container {
+  .arithmeticTrain-container {
     padding: 0 !important;
     margin: 0 !important;
     background: #f5f7f8 !important;
