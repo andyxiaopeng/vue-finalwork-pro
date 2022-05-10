@@ -7,3 +7,10 @@ export function getList(data) {
     data,
   })
 }
+export function getList2(data) {
+  return request({
+    url: '/indexpaper/getList',
+    method: 'post',
+    data,
+  })
+}

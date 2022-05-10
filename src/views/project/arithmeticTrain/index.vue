@@ -5,9 +5,6 @@
         <el-card class="card">
           <div slot="header">
             <span>离线数据模型训练</span>
-            <el-button type="primary" class="cardbutton">
-              模型训练开始
-            </el-button>
           </div>
           <div>
             <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
@@ -20,12 +17,16 @@
 
 <script>
   import VabChart from '@/plugins/echarts'
+  import { getList, doEdit } from '@/api/arithmeticTrain'
 
   export default {
     name: 'ArithmeticTrain',
     components: { VabChart },
     data() {
       return {
+        base: +new Date(2020, 1, 1),
+        fiveMin: 1000 * 60,
+        now: 0,
         fwl: {
           grid: {
             top: '4%',
@@ -49,20 +50,19 @@
               type: 'value',
             },
           ],
+          legend: {
+            data: ['real', 'prediction'],
+          },
           series: [
             {
-              name: '访问量',
+              name: 'real',
               type: 'line',
               data: [],
-              smooth: true,
-              areaStyle: {},
             },
             {
-              name: 'XX量',
+              name: 'prediction',
               type: 'line',
               data: [],
-              smooth: true,
-              areaStyle: {},
             },
           ],
         },
@@ -70,46 +70,61 @@
     },
     created() {},
     mounted() {
-      let base = +new Date(2020, 1, 1)
-      let oneDay = 24 * 3600 * 1000
-      let date = []
+      this.now = new Date(this.base)
 
-      let data = [Math.random() * 1500]
-      let data2 = [Math.random() * 1300]
-      let now = new Date(base)
+      for (let i = 1; i < 60; i++) {
+        this.fetchData().then((res) => {
+          console.log(res)
+          let data = res
 
-      const addData = (shift) => {
-        now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-        date.push(now)
-        data.push(this.$baseLodash.random(20000, 60000))
-        data2.push(this.$baseLodash.random(20000, 60000))
+          let now = this.now
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          console.log(data)
+          this.fwl.xAxis[0].data.push(nowstr)
+          this.fwl.series[0].data.push(data['realvalue'])
+          this.fwl.series[1].data.push(data['prediction'])
 
-        if (shift) {
-          //shift() 方法用于把数组的第一个元素从其中删除
-          date.shift()
-          data.shift()
-          data2.shift()
-        }
-
-        now = new Date(+new Date(now) + oneDay)
+          this.now = new Date(+new Date(now) + this.fiveMin)
+        })
       }
-
-      for (let i = 1; i < 6; i++) {
-        addData()
-      }
-      addData(true)
-      this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data
-      this.fwl.series[1].data = data2
       this.timer = setInterval(() => {
-        // 删除数组第一个，再后续添加一个，相当于时序变化
-        addData(true)
-        this.fwl.xAxis[0].data = date
-        this.fwl.series[0].data = data
-        this.fwl.series[1].data = data2
-      }, 3000)
+        // addData(true)
+        this.fetchData().then((res) => {
+          if (res == null) {
+            clearInterval(this.timer)
+          }
+          console.log(res)
+          let data = res
+
+          let now = this.now
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          console.log(data)
+          this.fwl.xAxis[0].data.push(nowstr)
+          this.fwl.series[0].data.push(data['realvalue'])
+          this.fwl.series[1].data.push(data['prediction'])
+
+          this.now = new Date(+new Date(now) + this.fiveMin)
+        })
+      }, 5000)
     },
-    methods: {},
+    beforeDestroy() {
+      doEdit()
+      clearInterval(this.timer)
+    },
+    methods: {
+      async fetchData() {
+        const { data } = await getList()
+        return data
+      },
+    },
   }
 </script>
 

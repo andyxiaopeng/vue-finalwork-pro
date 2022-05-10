@@ -7,18 +7,18 @@
         :xs="24"
         :sm="24"
         :md="12"
-        :lg="6"
+        :lg="8"
         :xl="6"
       >
-        <router-link :to="item.link" target="_blank">
-          <el-card class="icon-panel" shadow="never">
-            <vab-icon
-              :style="{ color: item.color }"
-              :icon="['fas', item.icon]"
-            ></vab-icon>
-            <p>{{ item.title }}{{ item.data }}</p>
-          </el-card>
-        </router-link>
+        <!-- <router-link :to="item.link" target="_blank"> -->
+        <el-card class="icon-panel" shadow="never">
+          <vab-icon
+            :style="{ color: item.color }"
+            :icon="['fas', item.icon]"
+          ></vab-icon>
+          <p>{{ item.title }}{{ item.data }}</p>
+        </el-card>
+        <!-- </router-link> -->
       </el-col>
 
       <el-col :span="18">
@@ -42,7 +42,7 @@
       <el-col :span="6">
         <el-card class="card" shadow="never">
           <div slot="header">
-            <span>更新日志</span>
+            <span>访问日志</span>
           </div>
           <el-timeline :reverse="reverse">
             <el-timeline-item
@@ -67,6 +67,7 @@
   import VabChart from '@/plugins/echarts'
   import { dependencies, devDependencies } from '../../../package.json'
   import { getList } from '@/api/changeLog'
+  import { getList2 } from '@/api/indexpaper'
   import { getNoticeList } from '@/api/notice'
   import { getRepos, getStargazers } from '@/api/github'
   import Plan from './components/Plan'
@@ -85,7 +86,6 @@
         nodeEnv: process.env.NODE_ENV,
         dependencies: dependencies,
         devDependencies: devDependencies,
-
         //访问量
         fwl: {
           grid: {
@@ -95,195 +95,17 @@
             bottom: '0%',
             containLabel: true,
           },
-          xAxis: [
-            {
-              type: 'category',
-              boundaryGap: false,
-              data: [],
-              axisTick: {
-                alignWithLabel: true,
-              },
-            },
-          ],
-          yAxis: [
-            {
-              type: 'value',
-            },
-          ],
-          series: [
-            {
-              name: '访问量',
-              type: 'line',
-              data: [],
-              smooth: true,
-              areaStyle: {},
-            },
-          ],
-        },
-        //授权数
-        sqs: {
-          grid: {
-            top: '4%',
-            left: '2%',
-            right: '4%',
-            bottom: '0%',
-            containLabel: true,
+          xAxis: {
+            type: 'category',
+            data: ['日志数量', '训练数据量', '测试数据量'],
           },
-          xAxis: [
-            {
-              type: 'category',
-              /*boundaryGap: false,*/
-              data: ['0时', '4时', '8时', '12时', '16时', '20时', '24时'],
-              axisTick: {
-                alignWithLabel: true,
-              },
-            },
-          ],
-          yAxis: [
-            {
-              type: 'value',
-            },
-          ],
+          yAxis: {
+            type: 'value',
+          },
           series: [
             {
-              name: '授权数',
+              data: [],
               type: 'bar',
-              barWidth: '60%',
-              data: [10, 52, 20, 33, 39, 33, 22],
-            },
-          ],
-        },
-        //词云
-        cy: {
-          grid: {
-            top: '4%',
-            left: '2%',
-            right: '4%',
-            bottom: '0%',
-          },
-          series: [
-            {
-              type: 'wordCloud',
-              gridSize: 15,
-              sizeRange: [12, 40],
-              rotationRange: [0, 0],
-              width: '100%',
-              height: '100%',
-              textStyle: {
-                normal: {
-                  color() {
-                    const arr = [
-                      '#5470c6',
-                      '#91cc75',
-                      '#fac858',
-                      '#ee6666',
-                      '#73c0de',
-                      '#975FE5',
-                    ]
-                    let index = Math.floor(Math.random() * arr.length)
-                    return arr[index]
-                  },
-                },
-              },
-              data: [
-                {
-                  name: 'vue-admin-beautiful',
-                  value: 15000,
-                },
-                {
-                  name: 'element',
-                  value: 10081,
-                },
-                {
-                  name: 'beautiful',
-                  value: 9386,
-                },
-
-                {
-                  name: 'vue',
-                  value: 6500,
-                },
-                {
-                  name: 'chuzhixin',
-                  value: 6000,
-                },
-                {
-                  name: 'good',
-                  value: 4500,
-                },
-                {
-                  name: 'success',
-                  value: 3800,
-                },
-                {
-                  name: 'never',
-                  value: 3000,
-                },
-                {
-                  name: 'boy',
-                  value: 2500,
-                },
-                {
-                  name: 'girl',
-                  value: 2300,
-                },
-                {
-                  name: 'github',
-                  value: 2000,
-                },
-                {
-                  name: 'hbuilder',
-                  value: 1900,
-                },
-                {
-                  name: 'dcloud',
-                  value: 1800,
-                },
-                {
-                  name: 'china',
-                  value: 1700,
-                },
-                {
-                  name: '1204505056',
-                  value: 1600,
-                },
-                {
-                  name: '972435319',
-                  value: 1500,
-                },
-                {
-                  name: 'young',
-                  value: 1200,
-                },
-                {
-                  name: 'old',
-                  value: 1100,
-                },
-                {
-                  name: 'vuex',
-                  value: 900,
-                },
-                {
-                  name: 'router',
-                  value: 800,
-                },
-                {
-                  name: 'money',
-                  value: 700,
-                },
-                {
-                  name: 'qingdao',
-                  value: 800,
-                },
-                {
-                  name: 'yantai',
-                  value: 9000,
-                },
-                {
-                  name: 'author is very cool',
-                  value: 9200,
-                },
-              ],
             },
           ],
         },
@@ -296,23 +118,23 @@
         userAgent: navigator.userAgent,
         //卡片图标
         iconList: [
-          {
-            icon: 'th-large',
-            title: '采集的数据类型数量：',
-            link: '',
-            color: '#ffc069',
-            data: 0,
-          },
+          // {
+          //   icon: 'th-large',
+          //   title: '采集的数据类型数量：',
+          //   link: '',
+          //   color: '#ffc069',
+          //   data: 0,
+          // },
           {
             icon: 'random',
-            title: '总访客量：',
+            title: '模拟设备数量：',
             link: '',
             color: '#5cdbd3',
             data: 0,
           },
           {
             icon: 'database',
-            title: '数据量：',
+            title: '数据类型数量：',
             link: '',
             color: '#b37feb',
             data: 0,
@@ -324,31 +146,6 @@
             color: '#69c0ff',
             data: 0,
           },
-          // {
-          //   icon: 'bullhorn',
-          //   title: '公告',
-          //   link: '',
-          //   color: '#ff85c0',
-          // },
-          // {
-          //   icon: 'gift',
-          //   title: '礼物',
-          //   link: '',
-          //   color: '#ffd666',
-          // },
-
-          // {
-          //   icon: 'balance-scale-left',
-          //   title: '公平的世界',
-          //   link: '',
-          //   color: '#ff9c6e',
-          // },
-          // {
-          //   icon: 'coffee',
-          //   title: '休息一下',
-          //   link: '',
-          //   color: '#95de64',
-          // },
         ],
       }
     },
@@ -359,39 +156,16 @@
       clearInterval(this.timer)
     },
     mounted() {
-      let base = +new Date(2020, 1, 1)
-      let oneDay = 24 * 3600 * 1000
-      let date = []
+      this.fetchData2().then((res) => {
+        console.log(res)
+        this.fwl.series[0].data.push(res['alllog'])
+        this.fwl.series[0].data.push(res['alltraindata'])
+        this.fwl.series[0].data.push(res['alltestdata'])
 
-      let data = [Math.random() * 1500]
-      let now = new Date(base)
-
-      const addData = (shift) => {
-        now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-        date.push(now)
-        data.push(this.$baseLodash.random(20000, 60000))
-
-        if (shift) {
-          //shift() 方法用于把数组的第一个元素从其中删除
-          date.shift()
-          data.shift()
-        }
-
-        now = new Date(+new Date(now) + oneDay)
-      }
-
-      for (let i = 1; i < 6; i++) {
-        addData()
-      }
-      addData(true)
-      this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data
-      this.timer = setInterval(() => {
-        // 删除数组第一个，再后续添加一个，相当于时序变化
-        addData(true)
-        this.fwl.xAxis[0].data = date
-        this.fwl.series[0].data = data
-      }, 3000)
+        this.iconList[0].data = res['alldevice']
+        this.iconList[1].data = res['alldata']
+        this.iconList[2].data = res['alluser']
+      })
     },
     methods: {
       handleClick(e) {
@@ -409,21 +183,10 @@
           }
         })
         this.activities = data.slice(data.length - 7, data.length)
-        // const res = await getNoticeList()
-        // this.noticeList = res.data
-        /* getRepos({
-        token: "1061286824f978ea3cf98b7b8ea26fe27ba7cea1",
-      }).then((res) => {
-        const per_page = Math.ceil(res.data.stargazers_count / 100);
-        alert(per_page);
-        getStargazers({
-          token: "1061286824f978ea3cf98b7b8ea26fe27ba7cea1",
-          page: 1,
-          per_page: res.per_page,
-        }).then((res) => {
-          alert(JSON.stringify(res));
-        });
-      }); */
+      },
+      async fetchData2() {
+        const { data } = await getList2()
+        return data
       },
     },
   }

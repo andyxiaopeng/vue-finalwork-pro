@@ -199,6 +199,9 @@
               type: 'value',
             },
           ],
+          legend: {
+            data: ['压缩机进口压力', '压缩机出口压力'],
+          },
           series: [
             {
               name: '压缩机进口压力',
@@ -240,6 +243,9 @@
               type: 'value',
             },
           ],
+          legend: {
+            data: ['压缩机进口压力', '压缩机出口压力'],
+          },
           series: [
             {
               name: '压缩机进口压力',
@@ -261,97 +267,166 @@
     },
     created() {},
     mounted() {
-      let base = +new Date()
-      let intervalTime = 3000
-      let date = []
+      // WebSocket
+      if ('WebSocket' in window) {
+        this.websocket = new WebSocket(
+          'ws://127.0.0.1:8099/websocket/' + this.userName
+        )
+        this.initWebSocket()
+      } else {
+        alert('当前浏览器 Not support websocket')
+      }
+
+      // 数据配置开始
+
+      let date1 = []
+      let date2 = []
+
+      let date3 = []
+      let date4 = []
 
       let data1 = []
       let data2 = []
       let data3 = []
+
       let data4 = []
       let data5 = []
       let data6 = []
-      let now = new Date(base)
 
-      const addData = (shift) => {
-        // now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-        let nowstr = [now.getHours(), now.getMinutes(), now.getSeconds()].join(
-          ':'
-        )
-        date.push(nowstr)
-        this.fetchData().then((res) => {
-          console.log(res)
-          data1.push(res['compressor-ApressureInt'])
-          data2.push(res['compressor-ApressureOut'])
-          data3.push(res['compressor-Atemperature'])
+      this.fetchData().then((res) => {
+        console.log(res)
+        let dataA = res['compressor-A']
+        let dataB = res['compressor-B']
 
-          data4.push(res['compressor-BpressureInt'])
-          data5.push(res['compressor-BpressureOut'])
-          data6.push(res['compressor-Btemperature'])
+        dataA.map(function (value, index) {
+          console.log(value, index)
+          let df = value
+          let now = new Date(1 * df['time'])
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          date1.push(nowstr)
+          date2.push(nowstr)
+          data1.push(df['pressureInt'])
+          data2.push(df['pressureOut'])
+          data3.push(df['temperature'])
         })
-
-        if (shift) {
-          //shift() 方法用于把数组的第一个元素从其中删除
-          date.shift()
-          data1.shift()
-          data2.shift()
-          data3.shift()
-
-          data4.shift()
-          data5.shift()
-          data6.shift()
-        }
-
-        now = new Date(+new Date(now) + intervalTime)
-      }
-
-      for (let i = 1; i < 51; i++) {
-        addData()
-      }
-      addData(true)
-      this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data1
-
-      this.compressorAt.xAxis[0].data = date
-      this.compressorAt.series[0].data = data3
-
-      this.compressorAp.xAxis[0].data = date
-      this.compressorAp.series[0].data = data1
-      this.compressorAp.series[1].data = data2
-
-      this.compressorBt.xAxis[0].data = date
-      this.compressorBt.series[0].data = data6
-
-      this.compressorBp.xAxis[0].data = date
-      this.compressorBp.series[0].data = data4
-      this.compressorBp.series[1].data = data5
-
-      this.timer = setInterval(() => {
-        // 删除数组第一个，再后续添加一个，相当于时序变化
-        addData(true)
-        this.fwl.xAxis[0].data = date
-        this.fwl.series[0].data = data1
-
-        this.compressorAt.xAxis[0].data = date
-        this.compressorAt.series[0].data = data3
-
-        this.compressorAp.xAxis[0].data = date
+        this.compressorAp.xAxis[0].data = date1
         this.compressorAp.series[0].data = data1
         this.compressorAp.series[1].data = data2
 
-        this.compressorBt.xAxis[0].data = date
-        this.compressorBt.series[0].data = data6
+        this.compressorAt.xAxis[0].data = date2
+        this.compressorAt.series[0].data = data3
 
-        this.compressorBp.xAxis[0].data = date
+        dataB.map(function (value, index) {
+          console.log(value, index)
+          let df = value
+          let now = new Date(1 * df['time'])
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          date3.push(nowstr)
+          date4.push(nowstr)
+          data4.push(df['pressureInt'])
+          data5.push(df['pressureOut'])
+          data6.push(df['temperature'])
+        })
+        this.compressorBp.xAxis[0].data = date3
         this.compressorBp.series[0].data = data4
         this.compressorBp.series[1].data = data5
-      }, 3000)
+
+        this.compressorBt.xAxis[0].data = date4
+        this.compressorBt.series[0].data = data6
+      })
+    },
+    beforeDestroy() {
+      this.onbeforeunload()
     },
     methods: {
+      // 获取初试数据的方法定义
       async fetchData() {
         const { data } = await getList()
-        // console.log(data)
+        console.log(data)
         return data
+      },
+
+      // ----------------------- webSocket的方法定义
+      initWebSocket() {
+        // 连接错误
+        this.websocket.onerror = this.setErrorMessage
+
+        // 连接成功
+        this.websocket.onopen = this.setOnopenMessage
+
+        // 收到消息的回调
+        this.websocket.onmessage = this.setOnmessageMessage
+
+        // 连接关闭的回调
+        this.websocket.onclose = this.setOncloseMessage
+
+        // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = this.onbeforeunload
+      },
+      setErrorMessage() {
+        console.log(
+          'WebSocket连接发生错误   状态码：' + this.websocket.readyState
+        )
+      },
+      setOnopenMessage() {
+        console.log('WebSocket连接成功    状态码：' + this.websocket.readyState)
+      },
+      setOnmessageMessage(event) {
+        // 根据服务器推送的消息做自己的业务处理
+        // 编写逻辑代码
+        console.log('服务端返回：' + event.data)
+
+        //  event.data == {"msg":"success","code":200,"data":{"code":"60","data":{"temperature":"50","pressureInt":"364","pressureOut":"87"},"deviceId":"compressor-A","timeStamp":"1649489814.4108973"}}
+        // "data":{"code":"60","data":{"temperature":"50","pressureInt":"364","pressureOut":"87"},"deviceId":"compressor-A","timeStamp":"1649489814.4108973"}
+        let df = JSON.parse(event.data)
+        df = df['data']
+
+        if (df['deviceId'] == 'compressor-A') {
+          let now = new Date(1 * df['timeStamp'])
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          this.compressorAp.xAxis[0].data.push(nowstr)
+          this.compressorAp.series[0].data.push(df['data']['pressureInt'])
+          this.compressorAp.series[1].data.push(df['data']['pressureOut'])
+
+          this.compressorAt.xAxis[0].data.push(nowstr)
+          this.compressorAt.series[0].data.push(df['data']['temperature'])
+        } else if (df['deviceId'] == 'compressor-B') {
+          let now = new Date(1 * df['timeStamp'])
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          this.compressorBp.xAxis[0].data.push(nowstr)
+          this.compressorBp.series[0].data.push(df['data']['pressureInt'])
+          this.compressorBp.series[1].data.push(df['data']['pressureOut'])
+
+          this.compressorBt.xAxis[0].data.push(nowstr)
+          this.compressorBt.series[0].data.push(df['data']['temperature'])
+
+          // console.log('date-new', this.compressorAp.xAxis[0].data.length)
+        }
+      },
+      setOncloseMessage() {
+        console.log('WebSocket连接关闭    状态码：' + this.websocket.readyState)
+      },
+      onbeforeunload() {
+        this.closeWebSocket()
+      },
+      closeWebSocket() {
+        this.websocket.close()
       },
     },
   }

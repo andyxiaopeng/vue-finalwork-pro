@@ -5,12 +5,9 @@
         <el-card class="card">
           <div slot="header">
             <span>时序数据模型预测</span>
-            <el-button type="primary" class="cardbutton">
-              实时预测开始
-            </el-button>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl1" />
           </div>
         </el-card>
       </el-col>
@@ -20,12 +17,9 @@
         <el-card class="card">
           <div slot="header">
             <span>动态阈值</span>
-            <el-button type="primary" class="cardbutton">
-              实时预测开始
-            </el-button>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl2" />
           </div>
         </el-card>
       </el-col>
@@ -34,12 +28,9 @@
         <el-card class="card">
           <div slot="header">
             <span>压缩机工作状态</span>
-            <el-button type="primary" class="cardbutton">
-              实时预测开始
-            </el-button>
           </div>
           <div>
-            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl" />
+            <vab-chart auto-resize theme="vab-echarts-theme" :option="fwl3" />
           </div>
         </el-card>
       </el-col>
@@ -49,13 +40,57 @@
 
 <script>
   import VabChart from '@/plugins/echarts'
+  import { getList, doEdit } from '@/api/arithmeticShow'
 
   export default {
     name: 'ArithmeticShow',
     components: { VabChart },
     data() {
       return {
-        fwl: {
+        base: +new Date(2020, 1, 1),
+        fiveMin: 1000 * 60,
+        now: 0,
+
+        fwl1: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          legend: {
+            data: ['realvalue', 'prediction'],
+          },
+          series: [
+            {
+              name: 'realvalue',
+              type: 'line',
+              data: [],
+            },
+            {
+              name: 'prediction',
+              type: 'line',
+              data: [],
+            },
+          ],
+        },
+        fwl2: {
           grid: {
             top: '4%',
             left: '2%',
@@ -80,14 +115,7 @@
           ],
           series: [
             {
-              name: '访问量',
-              type: 'line',
-              data: [],
-              smooth: true,
-              areaStyle: {},
-            },
-            {
-              name: 'XX量',
+              name: '压缩机工作阈值',
               type: 'line',
               data: [],
               smooth: true,
@@ -95,50 +123,110 @@
             },
           ],
         },
+        fwl3: {
+          grid: {
+            top: '4%',
+            left: '2%',
+            right: '4%',
+            bottom: '0%',
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisTick: {
+                alignWithLabel: true,
+              },
+            },
+          ],
+          yAxis: [
+            {
+              type: 'value',
+            },
+          ],
+          series: [
+            {
+              name: '压缩机工作状态',
+              type: 'line',
+              data: [],
+              smooth: true,
+            },
+          ],
+        },
       }
     },
     created() {},
     mounted() {
-      let base = +new Date(2020, 1, 1)
-      let oneDay = 24 * 3600 * 1000
-      let date = []
+      this.now = new Date(this.base)
 
-      let data = [Math.random() * 1500]
-      let data2 = [Math.random() * 1300]
-      let now = new Date(base)
+      for (let i = 1; i < 61; i++) {
+        this.fetchData().then((res) => {
+          console.log(res)
+          let data_prediction = res['prediction']
+          let data_real = res['real']
 
-      const addData = (shift) => {
-        now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-        date.push(now)
-        data.push(this.$baseLodash.random(20000, 60000))
-        data2.push(this.$baseLodash.random(20000, 60000))
+          let now = this.now
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          this.fwl1.xAxis[0].data.push(nowstr)
+          this.fwl2.xAxis[0].data.push(nowstr)
+          this.fwl3.xAxis[0].data.push(nowstr)
 
-        if (shift) {
-          //shift() 方法用于把数组的第一个元素从其中删除
-          date.shift()
-          data.shift()
-          data2.shift()
-        }
+          if (data_real) {
+            this.fwl1.series[0].data.push(data_real['realvalue'])
+          }
+          this.fwl1.series[1].data.push(data_prediction['prediction'])
 
-        now = new Date(+new Date(now) + oneDay)
+          this.fwl2.series[0].data.push(data_prediction['threshold'])
+          this.fwl3.series[0].data.push(data_prediction['status'])
+
+          this.now = new Date(+new Date(now) + this.fiveMin)
+        })
       }
 
-      for (let i = 1; i < 6; i++) {
-        addData()
-      }
-      addData(true)
-      this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data
-      this.fwl.series[1].data = data2
       this.timer = setInterval(() => {
-        // 删除数组第一个，再后续添加一个，相当于时序变化
-        addData(true)
-        this.fwl.xAxis[0].data = date
-        this.fwl.series[0].data = data
-        this.fwl.series[1].data = data2
-      }, 3000)
+        this.fetchData().then((res) => {
+          console.log(res)
+          let data_prediction = res['prediction']
+          let data_real = res['real']
+
+          let now = this.now
+          let nowstr = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+          ].join(':')
+          this.fwl1.xAxis[0].data.push(nowstr)
+          this.fwl2.xAxis[0].data.push(nowstr)
+          this.fwl3.xAxis[0].data.push(nowstr)
+
+          if (data_real) {
+            this.fwl1.series[0].data.push(data_real['realvalue'])
+          }
+          this.fwl1.series[1].data.push(data_prediction['prediction'])
+
+          this.fwl2.series[0].data.push(data_prediction['threshold'])
+          this.fwl3.series[0].data.push(data_prediction['status'])
+
+          this.now = new Date(+new Date(now) + this.fiveMin)
+        })
+      }, 100)
     },
-    methods: {},
+    beforeDestroy() {
+      doEdit()
+      clearInterval(this.timer)
+    },
+    methods: {
+      async fetchData() {
+        const { data } = await getList()
+        return data
+      },
+    },
   }
 </script>
 
